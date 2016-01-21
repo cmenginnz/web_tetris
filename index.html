@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html ng-app="tetris">
+
+  <head>
+    <meta charset="utf-8" />
+    <title>tetris</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://code.angularjs.org/1.4.8/angular.js"></script>
+    <script src="app.js"></script>
+  </head>
+
+  <body ng-controller="MainCtrl" ng-keydown="on_keypress($event)" >
+    <div>
+	    <table class="preview_matrix">
+	    	<tr ng-repeat="row in preview_matrix.dump() track by $index">
+	    		<td ng-repeat="cell in row track by $index" ng-style="{ 'background-color': cell }" class="cell">
+	    		</td>
+	    	</tr>
+	    </table>
+    </div>
+    Score: {{score}}
+    <hr>
+    <div ng-click="on_keypress($event)">
+	    <table class="matrix">
+	    	<tr ng-repeat="row in matrix.dump() track by $index">
+	    		<td ng-repeat="cell in row track by $index" ng-style="{ 'background-color': cell }" class="cell">
+	    		</td>
+	    	</tr>
+	    </table>
+    </div>
+  </body>
+
+</html>

@@ -1,0 +1,20 @@
+.cell {
+    width: 20px;
+    height: 20px;
+}
+
+
+.preview_matrix .cell {
+    width: 10px;
+    height: 10px;
+}
+
+table, th, td {
+    border: 2px solid gainsboro;
+}
+
+table {
+    border-collapse: collapse;
+    border: 3px solid black;
+}
+
