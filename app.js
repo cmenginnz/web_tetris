@@ -300,6 +300,9 @@
             return;
           }
         }
+        if (!$scope.is_playing || $scope.is_pausing) {
+          return;
+        }
         switch (key) {
           case 37:
             return $scope.piece.left();

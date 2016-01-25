@@ -195,6 +195,9 @@ app.controller('MainCtrl', ($scope, $timeout) ->
                     pause_game()
                     return
 
+            if not $scope.is_playing or $scope.is_pausing
+                return
+
             switch key
                 when 37 then $scope.piece.left()
                 when 38 then $scope.piece.rotate()
