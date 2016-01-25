@@ -174,8 +174,17 @@ app.controller('MainCtrl', ($scope, $timeout) ->
         $scope.on_keypress = (event) ->
             key = event.which
 
-            if not $scope.is_playing or $scope.is_pausing
-                return
+            if key == 40
+                if not $scope.is_playing
+                    start_game()
+                    return
+                else if $scope.is_pausing
+                    pause_game()
+                    return
+            else if key == 27
+                if $scope.is_playing
+                    pause_game()
+                    return
 
             switch key
                 when 37 then $scope.piece.left()
@@ -208,7 +217,7 @@ app.controller('MainCtrl', ($scope, $timeout) ->
     $scope.start_game = ->
         start_game()
 
-    $scope.pause_game = ->
+    pause_game = ->
         if not $scope.is_playing
             return
         $scope.is_pausing = not $scope.is_pausing
@@ -216,6 +225,9 @@ app.controller('MainCtrl', ($scope, $timeout) ->
             disable_autodown()
         else
             enable_autodown()
+
+    $scope.pause_game = ->
+        pause_game()
 
     init = ->
         $scope.matrix = new Matrix

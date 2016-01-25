@@ -236,7 +236,7 @@
   app = angular.module('tetris', []);
 
   app.controller('MainCtrl', function($scope, $timeout) {
-    var bind_key, die, disable_autodown, do_autodown, do_new_piece, down, down_to_bottom, enable_autodown, init, new_piece, start_game, timmer;
+    var bind_key, die, disable_autodown, do_autodown, do_new_piece, down, down_to_bottom, enable_autodown, init, new_piece, pause_game, start_game, timmer;
     timmer = 0;
     do_new_piece = function() {
       return new Piece($scope.matrix, $scope.preview_matrix);
@@ -280,8 +280,19 @@
       return $scope.on_keypress = function(event) {
         var key;
         key = event.which;
-        if (!$scope.is_playing || $scope.is_pausing) {
-          return;
+        if (key === 40) {
+          if (!$scope.is_playing) {
+            start_game();
+            return;
+          } else if ($scope.is_pausing) {
+            pause_game();
+            return;
+          }
+        } else if (key === 27) {
+          if ($scope.is_playing) {
+            pause_game();
+            return;
+          }
         }
         switch (key) {
           case 37:
@@ -323,7 +334,7 @@
     $scope.start_game = function() {
       return start_game();
     };
-    $scope.pause_game = function() {
+    pause_game = function() {
       if (!$scope.is_playing) {
         return;
       }
@@ -333,6 +344,9 @@
       } else {
         return enable_autodown();
       }
+    };
+    $scope.pause_game = function() {
+      return pause_game();
     };
     init = function() {
       $scope.matrix = new Matrix;

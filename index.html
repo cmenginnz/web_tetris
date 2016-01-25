@@ -24,8 +24,8 @@
       Score: {{score}}
     </div>
     <div>
-      <div class="btn btn-success btn-sm" ng-click="start_game()">Go</div>
-      <div class="btn btn-warning btn-sm" ng-click="pause_game()" ng-class="is_playing ? '' : 'disabled'">{{is_pausing ? "Resume" : "Pause"}}</div>
+      <div class="btn btn-success btn-sm" ng-click="start_game()" title="↓">Go</div>
+      <div class="btn btn-warning btn-sm" ng-click="pause_game()" title="Esc" ng-class="is_playing ? '' : 'disabled'">{{is_pausing ? "Resume" : "Pause"}}</div>
     </div>
     <hr>
     <div ng-click="on_keypress($event)">
@@ -37,5 +37,4 @@
 	    </table>
     </div>
   </body>
-
 </html>
