@@ -97,7 +97,7 @@
       pieces = [[[0, 0], [0, 1], [1, 0], [1, 1]], [[-1, 0], [0, 0], [1, 0], [2, 0]], [[-1, 0], [0, 0], [1, 0], [1, 1]], [[-1, 0], [0, 0], [1, 0], [-1, 1]], [[0, 0], [1, 0], [-1, 1], [0, 1]], [[-1, 0], [0, 0], [1, 0], [0, 1]], [[-1, 0], [0, 0], [0, 1], [1, 1]]];
       colors = ["darkred", "orange", "darkmagenta", "darkcyan", "darkblue", "lime", "darkgray"];
       this.x = 4;
-      this.y = 0;
+      this.y = 1;
       this.piece = pieces[this.type];
       this.color = colors[this.type];
       this.matrix = matrix;
@@ -236,13 +236,15 @@
   app = angular.module('tetris', []);
 
   app.controller('MainCtrl', function($scope, $timeout) {
-    var bind_key, die, disable_autodown, do_autodown, do_new_piece, down, down_to_bottom, enable_autodown, init, new_piece, pause_game, start_game, timmer;
+    var bind_key, die, disable_autodown, do_autodown, do_new_piece, down, down_to_bottom, enable_autodown, first_down_to_bottom, init, new_piece, pause_game, start_game, timmer;
     timmer = 0;
+    first_down_to_bottom = true;
     do_new_piece = function() {
       return new Piece($scope.matrix, $scope.preview_matrix);
     };
     new_piece = function() {
       var _ref;
+      first_down_to_bottom = true;
       $scope.next_piece = (_ref = $scope.next_piece) != null ? _ref : do_new_piece();
       $scope.piece = $scope.next_piece;
       $scope.piece.apply();
@@ -270,10 +272,15 @@
     down_to_bottom = function() {
       var r;
       r = true;
-      while (r) {
-        r = $scope.piece.down();
+      if (first_down_to_bottom) {
+        while (r) {
+          r = $scope.piece.down();
+        }
+        enable_autodown();
+        return first_down_to_bottom = false;
+      } else {
+        return down();
       }
-      return enable_autodown();
     };
     bind_key = function() {
       return $scope.on_keypress = function(event) {

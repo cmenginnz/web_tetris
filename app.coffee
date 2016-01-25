@@ -55,7 +55,7 @@ class Piece
         colors = [ "darkred", "orange", "darkmagenta", "darkcyan", "darkblue", "lime", "darkgray" ]
 
         @x = 4
-        @y = 0
+        @y = 1
         @piece = pieces[@type]
         @color = colors[@type]
         @matrix = matrix
@@ -139,11 +139,14 @@ app = angular.module 'tetris', [];
 
 app.controller('MainCtrl', ($scope, $timeout) ->
     timmer = 0
+    first_down_to_bottom = true;
 
     do_new_piece = ->
         new Piece $scope.matrix, $scope.preview_matrix
 
     new_piece = ->
+        first_down_to_bottom = true;
+
         $scope.next_piece = $scope.next_piece ? do_new_piece()
 
         $scope.piece = $scope.next_piece
@@ -168,8 +171,13 @@ app.controller('MainCtrl', ($scope, $timeout) ->
 
     down_to_bottom = ->
         r = true
-        r = $scope.piece.down() while r;
-        enable_autodown();
+
+        if first_down_to_bottom
+            r = $scope.piece.down() while r;
+            enable_autodown();
+            first_down_to_bottom = false;
+        else
+            down();
 
     bind_key = ->
         $scope.on_keypress = (event) ->
