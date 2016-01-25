@@ -4,9 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <title>tetris</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css" />
     <script src="https://code.angularjs.org/1.4.8/angular.js"></script>
     <script src="app.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
   </head>
 
   <body ng-controller="MainCtrl" ng-keydown="on_keypress($event)" >
@@ -18,7 +20,13 @@
 	    	</tr>
 	    </table>
     </div>
-    Score: {{score}}
+    <div>
+      Score: {{score}}
+    </div>
+    <div>
+      <div class="btn btn-success btn-sm" ng-click="start_game()">Go</div>
+      <div class="btn btn-warning btn-sm" ng-click="pause_game()" ng-class="is_playing ? '' : 'disabled'">{{is_pausing ? "Resume" : "Pause"}}</div>
+    </div>
     <hr>
     <div ng-click="on_keypress($event)">
 	    <table class="matrix">

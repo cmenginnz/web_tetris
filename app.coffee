@@ -58,12 +58,11 @@ class Piece
         @y = 0
         @piece = pieces[@type]
         @color = colors[@type]
-        @matrix_dump = matrix.dump()
+        @matrix = matrix
 
 
         preview_matrix.clean_all()
-        @preview_matrix_dump = preview_matrix.dump()
-        @do_preview_apply(@preview_matrix_dump)
+        @do_preview_apply(preview_matrix.dump())
 
     do_rotate: ->
         console.log @piece
@@ -103,22 +102,22 @@ class Piece
         return true;
 
     apply: ->
-        tmp_matrix_dump = JSON.parse(JSON.stringify(@matrix_dump))
+        tmp_matrix_dump = JSON.parse(JSON.stringify(@matrix.dump()))
         if @do_apply tmp_matrix_dump
-            @do_apply @matrix_dump
+            @do_apply @matrix.dump()
             return true
         else
             return false
 
     un_apply: ->
-        @do_apply @matrix_dump, false
+        @do_apply @matrix.dump(), false
 
     act: (action, un_action) ->
-        @un_apply(@matrix_dump)
+        @un_apply(@matrix.dump())
         action.call(this)
-        if not @apply(@matrix_dump)
+        if not @apply(@matrix.dump())
             un_action.call(this)
-            @apply(@matrix_dump)
+            @apply(@matrix.dump())
             return false
         else
             return true
@@ -139,8 +138,6 @@ class Piece
 app = angular.module 'tetris', [];
 
 app.controller('MainCtrl', ($scope, $timeout) ->
-    is_die = false
-    is_playing = 1
     timmer = 0
 
     do_new_piece = ->
@@ -176,9 +173,10 @@ app.controller('MainCtrl', ($scope, $timeout) ->
     bind_key = ->
         $scope.on_keypress = (event) ->
             key = event.which
-            console.log key
-            if is_die
+
+            if not $scope.is_playing or $scope.is_pausing
                 return
+
             switch key
                 when 37 then $scope.piece.left()
                 when 38 then $scope.piece.rotate()
@@ -191,21 +189,42 @@ app.controller('MainCtrl', ($scope, $timeout) ->
         enable_autodown()
 
 
-    enable_autodown = ->
+    disable_autodown = ->
         $timeout.cancel(timmer) if timmer
-        if (is_playing)
+
+    enable_autodown = ->
+        disable_autodown()
+        if ($scope.is_playing)
             timmer = $timeout(do_autodown, 1000)
+
+    start_game = ->
+        $scope.matrix.clean_all()
+        new_piece()
+        $scope.score = 0
+        $scope.is_playing = true
+        $scope.is_pausing = false
+        enable_autodown()
+
+    $scope.start_game = ->
+        start_game()
+
+    $scope.pause_game = ->
+        if not $scope.is_playing
+            return
+        $scope.is_pausing = not $scope.is_pausing
+        if $scope.is_pausing
+            disable_autodown()
+        else
+            enable_autodown()
 
     init = ->
         $scope.matrix = new Matrix
         $scope.preview_matrix = new Matrix(4, 4)
-        $scope.matrix_dump = $scope.matrix.dump()
-        $scope.preview_matrix_dump = $scope.preview_matrix.dump()
         $scope.score = 0
-        new_piece()
-        is_die = false
+        $scope.is_playing = false;
+        $scope.is_pausing = false;
+
         bind_key()
-        enable_autodown()
 
     init();
 );

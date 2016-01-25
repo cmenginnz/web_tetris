@@ -100,10 +100,9 @@
       this.y = 0;
       this.piece = pieces[this.type];
       this.color = colors[this.type];
-      this.matrix_dump = matrix.dump();
+      this.matrix = matrix;
       preview_matrix.clean_all();
-      this.preview_matrix_dump = preview_matrix.dump();
-      this.do_preview_apply(this.preview_matrix_dump);
+      this.do_preview_apply(preview_matrix.dump());
     }
 
     Piece.prototype.do_rotate = function() {
@@ -187,9 +186,9 @@
 
     Piece.prototype.apply = function() {
       var tmp_matrix_dump;
-      tmp_matrix_dump = JSON.parse(JSON.stringify(this.matrix_dump));
+      tmp_matrix_dump = JSON.parse(JSON.stringify(this.matrix.dump()));
       if (this.do_apply(tmp_matrix_dump)) {
-        this.do_apply(this.matrix_dump);
+        this.do_apply(this.matrix.dump());
         return true;
       } else {
         return false;
@@ -197,15 +196,15 @@
     };
 
     Piece.prototype.un_apply = function() {
-      return this.do_apply(this.matrix_dump, false);
+      return this.do_apply(this.matrix.dump(), false);
     };
 
     Piece.prototype.act = function(action, un_action) {
-      this.un_apply(this.matrix_dump);
+      this.un_apply(this.matrix.dump());
       action.call(this);
-      if (!this.apply(this.matrix_dump)) {
+      if (!this.apply(this.matrix.dump())) {
         un_action.call(this);
-        this.apply(this.matrix_dump);
+        this.apply(this.matrix.dump());
         return false;
       } else {
         return true;
@@ -237,9 +236,7 @@
   app = angular.module('tetris', []);
 
   app.controller('MainCtrl', function($scope, $timeout) {
-    var bind_key, die, do_autodown, do_new_piece, down, down_to_bottom, enable_autodown, init, is_die, is_playing, new_piece, timmer;
-    is_die = false;
-    is_playing = 1;
+    var bind_key, die, disable_autodown, do_autodown, do_new_piece, down, down_to_bottom, enable_autodown, init, new_piece, start_game, timmer;
     timmer = 0;
     do_new_piece = function() {
       return new Piece($scope.matrix, $scope.preview_matrix);
@@ -252,6 +249,7 @@
       return $scope.next_piece = do_new_piece();
     };
     die = function() {
+      var is_die;
       return is_die = true;
     };
     down = function() {
@@ -282,8 +280,7 @@
       return $scope.on_keypress = function(event) {
         var key;
         key = event.which;
-        console.log(key);
-        if (is_die) {
+        if (!$scope.is_playing || $scope.is_pausing) {
           return;
         }
         switch (key) {
@@ -304,24 +301,46 @@
       down();
       return enable_autodown();
     };
-    enable_autodown = function() {
+    disable_autodown = function() {
       if (timmer) {
-        $timeout.cancel(timmer);
+        return $timeout.cancel(timmer);
       }
-      if (is_playing) {
+    };
+    enable_autodown = function() {
+      disable_autodown();
+      if ($scope.is_playing) {
         return timmer = $timeout(do_autodown, 1000);
+      }
+    };
+    start_game = function() {
+      $scope.matrix.clean_all();
+      new_piece();
+      $scope.score = 0;
+      $scope.is_playing = true;
+      $scope.is_pausing = false;
+      return enable_autodown();
+    };
+    $scope.start_game = function() {
+      return start_game();
+    };
+    $scope.pause_game = function() {
+      if (!$scope.is_playing) {
+        return;
+      }
+      $scope.is_pausing = !$scope.is_pausing;
+      if ($scope.is_pausing) {
+        return disable_autodown();
+      } else {
+        return enable_autodown();
       }
     };
     init = function() {
       $scope.matrix = new Matrix;
       $scope.preview_matrix = new Matrix(4, 4);
-      $scope.matrix_dump = $scope.matrix.dump();
-      $scope.preview_matrix_dump = $scope.preview_matrix.dump();
       $scope.score = 0;
-      new_piece();
-      is_die = false;
-      bind_key();
-      return enable_autodown();
+      $scope.is_playing = false;
+      $scope.is_pausing = false;
+      return bind_key();
     };
     return init();
   });
