@@ -168,7 +168,8 @@ app.controller('MainCtrl', ($scope, $timeout) ->
 
     down_to_bottom = ->
         r = true
-        r = down() while r;
+        r = $scope.piece.down() while r;
+        enable_autodown();
 
     bind_key = ->
         $scope.on_keypress = (event) ->

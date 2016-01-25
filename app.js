@@ -268,13 +268,12 @@
       }
     };
     down_to_bottom = function() {
-      var r, _results;
+      var r;
       r = true;
-      _results = [];
       while (r) {
-        _results.push(r = down());
+        r = $scope.piece.down();
       }
-      return _results;
+      return enable_autodown();
     };
     bind_key = function() {
       return $scope.on_keypress = function(event) {
